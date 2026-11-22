@@ -1,0 +1,38 @@
+
+name: Build Hesabdar Amir APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Extract project
+        run: |
+          mkdir source
+          unzip -q hesabdar_amir_single_phone.zip -d source
+
+      - name: Build APK
+        working-directory: source/hesabdar_amir_single_phone
+        run: |
+          flutter pub get
+          flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hesabdar-amir-apk
+          path: source/hesabdar_amir_single_phone/build/app/outputs/flutter-apk/app-release.apk
